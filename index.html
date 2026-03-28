@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HubxCraft | Web Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hubx-blue: #00d2ff;
+            --hubx-dark: #003366;
+            --bg-color: #050a14;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #102040 0%, var(--bg-color) 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Tasarımı */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 8%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--hubx-blue);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+
+        .logo { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px; 
+            font-weight: 700; 
+            color: var(--hubx-blue); 
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--hubx-blue);
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: var(--hubx-blue);
+            padding: 10px 20px;
+            border: 2px solid var(--hubx-blue);
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-btn:hover {
+            background: var(--hubx-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--hubx-blue);
+        }
+
+        /* Ana İçerik Kaplayıcı */
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            display: none; /* JS ile açılacak */
+        }
+
+        .card.active { display: block; animation: slideUp 0.6s ease; }
+
+        h2 { text-align: center; color: var(--hubx-blue); margin-bottom: 30px; font-family: 'Orbitron'; }
+
+        .input-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: #888; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--hubx-blue); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.4s;
+        }
+
+        .action-btn:hover { letter-spacing: 2px; filter: brightness(1.2); }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">HUBXCRAFT</div>
+    <div id="nav-actions">
+        <button class="nav-btn" onclick="showSection('reg-card')">Kayıt Ol</button>
+    </div>
+</nav>
+
+<div class="wrapper">
+    <div id="reg-card" class="card active">
+        <h2>KAYIT OL</h2>
+        <div class="input-group">
+            <label>Minecraft Kullanıcı Adı</label>
+            <input type="text" id="reg-username" placeholder="Örn: Alper_01">
+        </div>
+        <div class="input-group">
+            <label>Şifre</label>
+            <input type="password" id="reg-pass" placeholder="********">
+        </div>
+        <div class="input-group">
+            <label>Şifre Onay</label>
+            <input type="password" id="reg-pass-confirm" placeholder="********">
+        </div>
+        <button class="action-btn" onclick="processRegister()">SUNUCUYA KAYDOL</button>
+    </div>
+
+    <div id="profile-card" class="card">
+        <h2>PROFİLİM</h2>
+        <div style="text-align:center; margin-bottom:20px;">
+            <span style="color:#aaa">Kullanıcı:</span> <b id="display-user" style="color:var(--hubx-blue)"></b>
+        </div>
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin-bottom:20px;">
+        
+        <div class="input-group">
+            <label>Mevcut Şifre</label>
+            <input type="password" id="old-pass" placeholder="Eski Şifreniz">
+        </div>
+        <div class="input-group">
+            <label>Yeni Şifre</label>
+            <input type="password" id="new-pass" placeholder="Yeni Şifre">
+        </div>
+        <div class="input-group">
+            <label>Yeni Şifre Onay</label>
+            <input type="password" id="new-pass-confirm" placeholder="Yeni Şifre Onay">
+        </div>
+        <button class="action-btn" onclick="processChangePassword()">ŞİFREYİ GÜNCELLE</button>
+    </div>
+</div>
+
+<script>
+    // Veritabanı simülasyonu
+    let currentSession = {
+        username: "",
+        password: "",
+        isLoggedIn: false
+    };
+
+    function showSection(id) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function processRegister() {
+        const u = document.getElementById('reg-username').value;
+        const p = document.getElementById('reg-pass').value;
+        const c = document.getElementById('reg-pass-confirm').value;
+
+        if(!u || !p) { alert("Lütfen tüm alanları doldur!"); return; }
+        if(p !== c) { alert("Şifreler uyuşmuyor!"); return; }
+
+        // Kayıt verilerini kaydet
+        currentSession.username = u;
+        currentSession.password = p;
+        currentSession.isLoggedIn = true;
+
+        alert("HubxCraft'a hoş geldin, " + u + "! Kaydın tamamlandı.");
+
+        // Navbar güncelleme: Kayıt Ol -> Profil
+        document.getElementById('nav-actions').innerHTML = 
+            `<button class="nav-btn" onclick="showSection('profile-card')">PROFİLİM</button>`;
+        
+        // Profil sayfasını hazırla
+        document.getElementById('display-user').innerText = u;
+        showSection('profile-card');
+    }
+
+    function processChangePassword() {
+        const oldP = document.getElementById('old-pass').value;
+        const newP = document.getElementById('new-pass').value;
+        const newPC = document.getElementById('new-pass-confirm').value;
+
+        if(oldP !== currentSession.password) {
+            alert("Mevcut şifren hatalı!");
+            return;
+        }
+
+        if(newP !== newPC) {
+            alert("Yeni şifreler birbirini tutmuyor!");
+            return;
+        }
+
+        if(newP.length < 4) {
+            alert("Yeni şifre çok kısa!");
+            return;
+        }
+
+        // Şifre güncelle
+        currentSession.password = newP;
+        alert("Şifren hem HubxCraft sitesinde hem de oyunda başarıyla değiştirildi!");
+        
+        // Formu temizle
+        document.getElementById('old-pass').value = "";
+        document.getElementById('new-pass').value = "";
+        document.getElementById('new-pass-confirm').value = "";
+    }
+</script>
+
+</body>
+</html>
